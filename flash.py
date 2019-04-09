@@ -1,11 +1,15 @@
-import os, time
+import os, time, argparse
 
 import multiprocessing as mp
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", help="binary file to flash")
+args = parser.parse_args()
 
 portprefix = "/dev/ttyUSB" # for linux, might be diffrent in your OS
 portrange = range(10) # /dev/ttyUSB0 to /dev/ttyUSB9
 
-flashcommand = "esptool --baud 115200 --port {} write_flash --flash_mode qio 0x00000 /tmp/arduino_build_241866/wasserschaden_basic.ino.bin"
+flashcommand = "esptool -b 1500000  --port {} write_flash --flash_mode qio 0x00000 {}"
 
 class Port:
     def __init__(self, path):
@@ -20,7 +24,7 @@ class Port:
     def flash(self):
         print("flashing %s" % self.path)
         # time.sleep(5)
-        os.system(flashcommand.format(self.path))
+        os.system(flashcommand.format(self.path, args.f))
 
 pool = mp.Pool()
 
